@@ -1,0 +1,22 @@
+CREATE TABLE areas (
+    r NUMBER(2),
+    area NUMBER(14,2)
+);
+
+
+--PL/SQL
+DECLARE
+    r NUMBER(5);
+    area NUMBER(14,2);
+    pi CONSTANT NUMBER(4,2) := 3.14;
+BEGIN
+    r := 5;
+    WHILE r <= 9 LOOP
+        area := pi * POWER(r, 2);
+        INSERT INTO areas VALUES (r, area);
+        r := r + 1;
+    END LOOP;
+END;
+/
+
+SELECT * FROM areas;

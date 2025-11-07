@@ -1,0 +1,41 @@
+// Show all available databases
+show dbs;
+
+// Switch to or create a new database
+use local;
+
+// Create a new collection named 'Student'
+db.createCollection('Student');
+
+// Insert multiple student records
+db.Student.insert({'Rno':'1','Name':'Piyush','Class':'TECOMP'});
+db.Student.insert({'Rno':'2','Name':'Abhi','Class':'TECOMP'});
+db.Student.insert({'Rno':'3','Name':'Ashley','Class':'TECOMP'});
+db.Student.insert({'Rno':'4','Name':'Hitesh','Class':'TECOMP'});
+db.Student.insert({'Rno':'5','Name':'Pratik','Class':'TECOMP'});
+db.Student.insert({'Rno':'6','Name':'Priti','Class':'TECOMP'});
+
+// Display all records
+db.Student.find();
+
+// Display records in readable format
+db.Student.find().pretty();
+
+// Update a record (change 'Hitesh' to 'Henry')
+db.Student.update({'Name':'Hitesh'},{$set:{'Name':'Henry'}});
+
+// Verify the update
+db.Student.find().pretty();
+
+// Delete records (remove 'Pratik' and 'Priti')
+db.Student.remove({'Name':'Pratik'},1);
+db.Student.remove({'Name':'Priti'},1);
+
+// Check the remaining records
+db.Student.find().pretty();
+
+// Drop the entire collection
+db.Student.drop();
+
+// Confirm deletion
+db.Student.find().pretty();
