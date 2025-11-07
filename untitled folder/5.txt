@@ -1,101 +1,55 @@
--- Enable output display
 SET SERVEROUTPUT ON;
 SET VERIFY OFF;
 
--- Create the marks table
-CREATE TABLE marks (
-    rollno NUMBER(10),
-    name VARCHAR2(20),
-    sub1 NUMBER,
-    sub2 NUMBER,
-    sub3 NUMBER,
-    sub4 NUMBER,
-    sub5 NUMBER
+-- Create tables
+CREATE TABLE CompDep (
+    Roll NUMBER(10),
+    Name VARCHAR2(20)
 );
 
--- Insert sample data
-INSERT INTO marks VALUES (1, 'Karishma', 200, 250, 260, 270, 150);
-INSERT INTO marks VALUES (2, 'Mayuri',   210, 220, 230, 240, 250);
-INSERT INTO marks VALUES (3, 'Asim',     250, 260, 270, 280, 290);
-INSERT INTO marks VALUES (4, 'Vaishnavi',180, 190, 200, 220, 250);
-
--- Check data
-SELECT * FROM marks;
-
--- Create output tables
-CREATE TABLE stud_marks (
-    rollno NUMBER(10),
-    name VARCHAR2(20),
-    total_marks NUMBER(10)
+CREATE TABLE Student (
+    Roll NUMBER(10),
+    Name VARCHAR2(20)
 );
 
-CREATE TABLE result (
-    rollno NUMBER(10),
-    name VARCHAR2(20),
-    class VARCHAR2(30)
-);
+-- Insert data
+INSERT INTO Student VALUES (1, 'a');
+INSERT INTO Student VALUES (2, 'b');
+INSERT INTO Student VALUES (3, 'c');
+INSERT INTO Student VALUES (4, 'd');
 
--- Create procedure
-CREATE OR REPLACE PROCEDURE proc_grade
-IS
-    n NUMBER(10);
-    i NUMBER(10) := 0;
+INSERT INTO CompDep VALUES (2, 'b');
+INSERT INTO CompDep VALUES (5, 'e');
+INSERT INTO CompDep VALUES (6, 'f');
 
-    rollnol NUMBER(10);
-    namel VARCHAR2(30);
-    totall NUMBER(10);
-    classl VARCHAR2(30);
+-- PL/SQL block using parameterized cursor
+DECLARE
+    CURSOR c_student(p_roll NUMBER) IS
+        SELECT roll, name
+        FROM student
+        WHERE roll = p_roll;
 
-    s1 NUMBER;
-    s2 NUMBER;
-    s3 NUMBER;
-    s4 NUMBER;
-    s5 NUMBER;
+    v_roll NUMBER;
+    v_name VARCHAR2(20);
 BEGIN
-    SELECT COUNT(*) INTO n FROM marks;
+    -- Loop through each student record
+    FOR rec IN (SELECT roll, name FROM student) LOOP
+        -- Check if this roll number already exists in CompDep
+        SELECT COUNT(*) INTO v_roll FROM CompDep WHERE Roll = rec.roll;
 
-    LOOP
-        i := i + 1;
-
-        BEGIN
-            SELECT rollno, name, sub1, sub2, sub3, sub4, sub5
-            INTO rollnol, namel, s1, s2, s3, s4, s5
-            FROM marks
-            WHERE rollno = i;
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-                EXIT;
-        END;
-
-        totall := s1 + s2 + s3 + s4 + s5;
-
-        IF totall BETWEEN 990 AND 1500 THEN
-            classl := 'DISTINCTION';
-        ELSIF totall BETWEEN 900 AND 989 THEN
-            classl := 'FIRST CLASS';
-        ELSIF totall BETWEEN 825 AND 899 THEN
-            classl := 'HIGHER SECOND CLASS';
+        IF v_roll = 0 THEN
+            -- If not found, insert the record
+            INSERT INTO CompDep VALUES (rec.roll, rec.name);
+            DBMS_OUTPUT.PUT_LINE('Inserted Roll: ' || rec.roll || ', Name: ' || rec.name);
         ELSE
-            classl := 'PASS CLASS';
-        END IF;
-
-        INSERT INTO stud_marks VALUES (rollnol, namel, totall);
-        INSERT INTO result VALUES (rollnol, namel, classl);
-
-        IF i >= n THEN
-            EXIT;
+            -- If found, skip
+            DBMS_OUTPUT.PUT_LINE('Skipped Roll: ' || rec.roll || ' (already exists)');
         END IF;
     END LOOP;
 
-    DBMS_OUTPUT.PUT_LINE('Procedure executed successfully!');
+    DBMS_OUTPUT.PUT_LINE('Merge completed successfully!');
 END;
 /
 
-
-
-
------Executing the procedure
-EXECUTE proc_grade;
-
-SELECT * FROM stud_marks;
-SELECT * FROM result;
+-- Display final data
+SELECT * FROM CompDep;

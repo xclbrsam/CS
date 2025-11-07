@@ -1,80 +1,22 @@
-SHOW DATABASES;
-USE trupti;ˀ
-
-CREATE TABLE Student(
-    SeatNo VARCHAR(20),
-    Name VARCHAR(20),
-    Class VARCHAR(10),
-    Branch VARCHAR(10)
+CREATE TABLE areas (
+    r NUMBER(2),
+    area NUMBER(14,2)
 );
 
-DESC Student;
 
-INSERT INTO Student VALUES ('T190273001','Shubhangi','TE','E&TC');
-INSERT INTO Student VALUES ('T190273002','Shital','TE','E&TC');
-INSERT INTO Student VALUES ('T190273003','Shruti','TE','E&TC');
-INSERT INTO Student VALUES ('T190273004','Nikita','TE','E&TC');
-INSERT INTO Student VALUES ('T190273005','Ashwini','TE','E&TC');
-INSERT INTO Student VALUES ('T190273006','Manjukesh','TE','E&TC');
+--PL/SQL
+DECLARE
+    r NUMBER(5);
+    area NUMBER(14,2);
+    pi CONSTANT NUMBER(4,2) := 3.14;
+BEGIN
+    r := 5;
+    WHILE r <= 9 LOOP
+        area := pi * POWER(r, 2);
+        INSERT INTO areas VALUES (r, area);
+        r := r + 1;
+    END LOOP;
+END;
+/
 
-CREATE TABLE Marksheet(
-    SeatNo VARCHAR(20),
-    DC INT,
-    EME INT,
-    MCA INT,
-    DBMS INT,
-    CNS INT
-);
-
-DESC Marksheet;
-
-INSERT INTO Marksheet VALUES ('T190273001',41,42,48,40,47);
-INSERT INTO Marksheet VALUES ('T190273002',40,40,48,45,48);
-INSERT INTO Marksheet VALUES ('T190273003',90,80,89,83,74);
-INSERT INTO Marksheet VALUES ('T190273004',81,81,85,92,65);
-INSERT INTO Marksheet VALUES ('T190273005',47,40,44,50,60);
-INSERT INTO Marksheet VALUES ('T190273006',40,16,32,21,36);
-
-SELECT * FROM Student;
-SELECT * FROM Marksheet;
-
-SELECT student.Name, marksheet.DC, marksheet.EME, marksheet.DBMS, marksheet.MCA, marksheet.CNS 
-FROM student 
-INNER JOIN marksheet ON student.SeatNo = marksheet.SeatNo;
-
-SELECT student.SeatNo, student.Name, marksheet.DC 
-FROM student 
-LEFT JOIN marksheet ON student.SeatNo = marksheet.SeatNo;
-
-SELECT student.SeatNo, student.Name, marksheet.EME, marksheet.CNS 
-FROM student 
-RIGHT JOIN marksheet ON student.SeatNo = marksheet.SeatNo;
-
-SELECT student.SeatNo, student.Name, marksheet.DC, marksheet.EME 
-FROM student 
-CROSS JOIN marksheet;
-
-SELECT SeatNo, EME FROM marksheet 
-WHERE EME = (SELECT MAX(EME) FROM marksheet);
-
-SELECT AVG(DC), AVG(EME), AVG(DBMS), AVG(MCA), AVG(CNS) FROM marksheet;
-
-SELECT COUNT(SeatNo) FROM marksheet;
-
-SELECT SUM(DC), SUM(EME), SUM(DBMS), SUM(MCA), SUM(CNS) FROM marksheet;
-
-SELECT MIN(DC), MAX(DC), AVG(DC), MIN(CNS), MAX(CNS), AVG(CNS) FROM marksheet;
-
-SELECT SeatNo, DC FROM marksheet HAVING DC > 60;
-
-SELECT SeatNo, MCA FROM marksheet HAVING MCA BETWEEN 50 AND 90;
-
-CREATE VIEW DC AS 
-SELECT SeatNo, DC FROM marksheet;
-
-CREATE OR REPLACE VIEW DC AS 
-SELECT SeatNo, DC FROM marksheet WHERE SeatNo = 'T190273004';
-
-SELECT * FROM DC;
-
-DROP VIEW DC;
+SELECT * FROM areas;

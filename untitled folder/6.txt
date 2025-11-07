@@ -1,55 +1,75 @@
-SET SERVEROUTPUT ON;
-SET VERIFY OFF;
+Step 1️⃣ – Create User (Login as SYSDBA first)
 
--- Create tables
-CREATE TABLE CompDep (
-    Roll NUMBER(10),
-    Name VARCHAR2(20)
+-- Login as SYSDBA
+-- SQL> connect sys as sysdba
+-- Enter password: svit
+
+-- Create user
+CREATE USER C##Computer IDENTIFIED BY svit;
+
+-- Grant privileges
+GRANT ALL PRIVILEGES TO C##Computer;
+GRANT CONNECT TO C##Computer;
+GRANT CREATE SESSION TO C##Computer;
+GRANT CREATE TABLE TO C##Computer;
+GRANT UNLIMITED TABLESPACE TO C##Computer;
+GRANT CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE, CREATE TRIGGER TO C##Computer;
+GRANT ALTER ANY TABLE TO C##Computer;
+GRANT ALTER ANY PROCEDURE TO C##Computer;
+GRANT ALTER ANY TRIGGER TO C##Computer;
+GRANT DELETE ANY TABLE TO C##Computer;
+GRANT DROP ANY PROCEDURE TO C##Computer;
+GRANT DROP ANY TRIGGER TO C##Computer;
+GRANT DROP ANY VIEW TO C##Computer;
+
+
+Step 2️⃣ – Login as the created user
+-- Exit and log in again
+-- SQL> connect C##Computer/svit;
+
+
+Step 3️⃣ – Create Library and Audit Tables
+CREATE TABLE library (
+    bno NUMBER(5),
+    bname VARCHAR2(20),
+    author VARCHAR2(20),
+    allowed_days NUMBER(5)
 );
 
-CREATE TABLE Student (
-    Roll NUMBER(10),
-    Name VARCHAR2(20)
+-- Insert sample data
+INSERT INTO library VALUES (1, 'QWE', 'poi', 10);
+INSERT INTO library VALUES (2, 'ASD', 'lkj', 15);
+INSERT INTO library VALUES (3, 'ZXC', 'mnb', 10);
+
+-- Check data
+SELECT * FROM library;
+
+-- Create audit table
+CREATE TABLE library_audit (
+    bno NUMBER(5),
+    old_all_days NUMBER(5),
+    new_all_days NUMBER(5)
 );
 
--- Insert data
-INSERT INTO Student VALUES (1, 'a');
-INSERT INTO Student VALUES (2, 'b');
-INSERT INTO Student VALUES (3, 'c');
-INSERT INTO Student VALUES (4, 'd');
 
-INSERT INTO CompDep VALUES (2, 'b');
-INSERT INTO CompDep VALUES (5, 'e');
-INSERT INTO CompDep VALUES (6, 'f');
 
--- PL/SQL block using parameterized cursor
-DECLARE
-    CURSOR c_student(p_roll NUMBER) IS
-        SELECT roll, name
-        FROM student
-        WHERE roll = p_roll;
-
-    v_roll NUMBER;
-    v_name VARCHAR2(20);
+Step 4️⃣ – Create the Trigger
+CREATE OR REPLACE TRIGGER Sample
+BEFORE UPDATE OR DELETE ON library
+FOR EACH ROW
 BEGIN
-    -- Loop through each student record
-    FOR rec IN (SELECT roll, name FROM student) LOOP
-        -- Check if this roll number already exists in CompDep
-        SELECT COUNT(*) INTO v_roll FROM CompDep WHERE Roll = rec.roll;
-
-        IF v_roll = 0 THEN
-            -- If not found, insert the record
-            INSERT INTO CompDep VALUES (rec.roll, rec.name);
-            DBMS_OUTPUT.PUT_LINE('Inserted Roll: ' || rec.roll || ', Name: ' || rec.name);
-        ELSE
-            -- If found, skip
-            DBMS_OUTPUT.PUT_LINE('Skipped Roll: ' || rec.roll || ' (already exists)');
-        END IF;
-    END LOOP;
-
-    DBMS_OUTPUT.PUT_LINE('Merge completed successfully!');
+    INSERT INTO library_audit VALUES (:OLD.bno, :OLD.allowed_days, :NEW.allowed_days);
 END;
 /
 
--- Display final data
-SELECT * FROM CompDep;
+
+Step 5️⃣ – Test the Trigger
+-- Update record
+UPDATE library SET allowed_days = 15 WHERE bno = 1;
+
+-- Delete record (optional test)
+-- DELETE FROM library WHERE bno = 3;
+
+-- Check audit table
+SELECT * FROM library_audit;
+

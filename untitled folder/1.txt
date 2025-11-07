@@ -1,0 +1,107 @@
+1. Database and Table Operations
+
+
+CREATE DATABASE dbms;
+USE dbms;
+
+CREATE TABLE stud (
+    RollNo INT,
+    Name VARCHAR(20),
+    Class VARCHAR(20)
+);
+
+DESC stud;
+
+ALTER TABLE stud ADD Branch VARCHAR(20);
+ALTER TABLE stud ADD MobileNo INT;
+
+DESC stud;
+
+INSERT INTO stud VALUES (1, 'ABC', 'TE', 'Comp', 123);
+INSERT INTO stud VALUES (2, 'PQR', 'TE', 'Comp', 456);
+INSERT INTO stud VALUES (3, 'XYZ', 'TE', 'Comp', 789);
+
+SELECT * FROM stud;
+
+ALTER TABLE stud DROP MobileNo;
+SELECT * FROM stud;
+
+ALTER TABLE stud ADD MobileNo INT;
+SELECT * FROM stud;
+
+UPDATE stud SET Class = 'SE' WHERE RollNo = '3';
+SELECT * FROM stud;
+
+SELECT RollNo, Name, Class FROM stud;
+
+TRUNCATE TABLE stud;
+SELECT * FROM stud;
+
+DESC stud;
+
+DROP TABLE stud;
+DESC stud;
+
+
+
+
+
+
+2. View Operations
+
+USE dbms;
+
+CREATE TABLE stud (
+    RollNo INT,
+    Name VARCHAR(20),
+    Class VARCHAR(20)
+);
+
+INSERT INTO stud VALUES (1, 'ABC', 'comp');
+INSERT INTO stud VALUES (2, 'qaz', 'comp');
+INSERT INTO stud VALUES (3, 'wsx', 'comp');
+
+SELECT * FROM stud;
+
+CREATE VIEW std AS
+SELECT RollNo, Name FROM stud;
+
+SELECT * FROM std;
+
+CREATE OR REPLACE VIEW std AS
+SELECT Name FROM stud WHERE Name = 'wsx';
+
+SELECT * FROM std;
+
+DROP VIEW std;
+
+SELECT * FROM std;
+
+
+
+
+
+
+3. Index Operations
+
+
+USE dbms;
+
+CREATE TABLE stud (
+    RollNo INT,
+    Name CHAR(20),
+    Class CHAR(20),
+    Branch CHAR(20)
+);
+
+INSERT INTO stud VALUES (1, 'qaz', 'TE', 'COMP');
+INSERT INTO stud VALUES (2, 'wsx', 'TE', 'COMP');
+INSERT INTO stud VALUES (3, 'edc', 'TE', 'COMP');
+INSERT INTO stud VALUES (4, 'rfv', 'TE', 'COMP');
+
+SELECT * FROM stud;
+
+CREATE INDEX ind_1 ON stud(Class);
+CREATE INDEX ind_2 ON stud(Name);
+
+SHOW INDEXES FROM stud;

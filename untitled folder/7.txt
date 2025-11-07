@@ -1,75 +1,41 @@
-Step 1️⃣ – Create User (Login as SYSDBA first)
+// Show all available databases
+show dbs;
 
--- Login as SYSDBA
--- SQL> connect sys as sysdba
--- Enter password: svit
+// Switch to or create a new database
+use local;
 
--- Create user
-CREATE USER C##Computer IDENTIFIED BY svit;
+// Create a new collection named 'Student'
+db.createCollection('Student');
 
--- Grant privileges
-GRANT ALL PRIVILEGES TO C##Computer;
-GRANT CONNECT TO C##Computer;
-GRANT CREATE SESSION TO C##Computer;
-GRANT CREATE TABLE TO C##Computer;
-GRANT UNLIMITED TABLESPACE TO C##Computer;
-GRANT CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE, CREATE TRIGGER TO C##Computer;
-GRANT ALTER ANY TABLE TO C##Computer;
-GRANT ALTER ANY PROCEDURE TO C##Computer;
-GRANT ALTER ANY TRIGGER TO C##Computer;
-GRANT DELETE ANY TABLE TO C##Computer;
-GRANT DROP ANY PROCEDURE TO C##Computer;
-GRANT DROP ANY TRIGGER TO C##Computer;
-GRANT DROP ANY VIEW TO C##Computer;
+// Insert multiple student records
+db.Student.insert({'Rno':'1','Name':'Piyush','Class':'TECOMP'});
+db.Student.insert({'Rno':'2','Name':'Abhi','Class':'TECOMP'});
+db.Student.insert({'Rno':'3','Name':'Ashley','Class':'TECOMP'});
+db.Student.insert({'Rno':'4','Name':'Hitesh','Class':'TECOMP'});
+db.Student.insert({'Rno':'5','Name':'Pratik','Class':'TECOMP'});
+db.Student.insert({'Rno':'6','Name':'Priti','Class':'TECOMP'});
 
+// Display all records
+db.Student.find();
 
-Step 2️⃣ – Login as the created user
--- Exit and log in again
--- SQL> connect C##Computer/svit;
+// Display records in readable format
+db.Student.find().pretty();
 
+// Update a record (change 'Hitesh' to 'Henry')
+db.Student.update({'Name':'Hitesh'},{$set:{'Name':'Henry'}});
 
-Step 3️⃣ – Create Library and Audit Tables
-CREATE TABLE library (
-    bno NUMBER(5),
-    bname VARCHAR2(20),
-    author VARCHAR2(20),
-    allowed_days NUMBER(5)
-);
+// Verify the update
+db.Student.find().pretty();
 
--- Insert sample data
-INSERT INTO library VALUES (1, 'QWE', 'poi', 10);
-INSERT INTO library VALUES (2, 'ASD', 'lkj', 15);
-INSERT INTO library VALUES (3, 'ZXC', 'mnb', 10);
+// Delete records (remove 'Pratik' and 'Priti')
+db.Student.remove({'Name':'Pratik'},1);
+db.Student.remove({'Name':'Priti'},1);
 
--- Check data
-SELECT * FROM library;
+// Check the remaining records
+db.Student.find().pretty();
 
--- Create audit table
-CREATE TABLE library_audit (
-    bno NUMBER(5),
-    old_all_days NUMBER(5),
-    new_all_days NUMBER(5)
-);
+// Drop the entire collection
+db.Student.drop();
 
-
-
-Step 4️⃣ – Create the Trigger
-CREATE OR REPLACE TRIGGER Sample
-BEFORE UPDATE OR DELETE ON library
-FOR EACH ROW
-BEGIN
-    INSERT INTO library_audit VALUES (:OLD.bno, :OLD.allowed_days, :NEW.allowed_days);
-END;
-/
-
-
-Step 5️⃣ – Test the Trigger
--- Update record
-UPDATE library SET allowed_days = 15 WHERE bno = 1;
-
--- Delete record (optional test)
--- DELETE FROM library WHERE bno = 3;
-
--- Check audit table
-SELECT * FROM library_audit;
-
+// Confirm deletion
+db.Student.find().pretty();
