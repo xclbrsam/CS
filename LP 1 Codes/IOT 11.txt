@@ -1,0 +1,33 @@
+
+
+int IRSensor = 9;
+
+int Buzzer = 13;
+
+
+
+void setup() {
+         
+ 
+  pinMode(IRSensor, INPUT);      
+  pinMode(Buzzer, OUTPUT);         
+}
+
+
+
+void loop() {
+  int sensorStatus = digitalRead(IRSensor);  
+
+  if (sensorStatus == 1)                     
+  {
+    digitalWrite(Buzzer, LOW);                  
+  
+  }
+ 
+ else                                         
+  {
+    digitalWrite(Buzzer, HIGH);                  
+  }
+
+  delay(100); 
+}
